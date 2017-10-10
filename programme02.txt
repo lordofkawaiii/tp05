@@ -1,0 +1,4 @@
+# commentaire ignoré par le Lecteur
+procedure principale()
+  i=1;
+finproc
