@@ -18,7 +18,7 @@ int NoeudSeqInst::executer() {
 }
 
 void NoeudSeqInst::ajoute(Noeud* instruction) {
-  m_instructions.push_back(instruction);
+  if (instruction!=nullptr) m_instructions.push_back(instruction);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -64,7 +64,7 @@ int NoeudOperateurBinaire::executer() {
     if (od == 0) throw DivParZeroException();
     valeur = og / od;
   }
-  return valeur;
+  return valeur; // On retourne la valeur calculée
 }
 
 ////////////////////////////////////////////////////////////////////////////////
