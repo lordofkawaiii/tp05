@@ -54,7 +54,7 @@ Noeud* Interpreteur::programme() {
 }
 
 Noeud* Interpreteur::seqInst() {
-  // <seqInst> ::= <inst> { <inst> }
+	// <seqInst> ::= <inst> { <im_instructionsm_instructionsnst> }
   NoeudSeqInst* sequence = new NoeudSeqInst();
   do {
     sequence->ajoute(inst());
@@ -198,12 +198,43 @@ Noeud* Interpreteur::instPour() {
 Noeud* Interpreteur::instEcrire() {
 	testerEtAvancer("ecrire");
 	testerEtAvancer("(");
+	Noeud* p;
+	vector<Noeud*> *vchaine = new vector<Noeud*>;
+	vector<Noeud*> *vexp = new vector<Noeud*>;
 	// on regarde si l’objet pointé par p est de type SymboleValue et si c’est une chaîne
-if ( (typeid(*p)==typeid(SymboleValue) && *((SymboleValue*)p)== "<CHAINE>" ) ...
-
+	if ((typeid(*p) == typeid(SymboleValue)
+			&& *((SymboleValue*) p) == "<CHAINE>")) {
+		Noeud* chaine1 = m_table.chercheAjoute(m_lecteur.getSymbole());
+		vchaine->push_back(chaine1);
+	} else {
+		Noeud* exp = expression();
+		vexp->push_back(exp);
+	}
+	m_lecteur.avancer();
+	while (m_lecteur.getSymbole() != ")") {
+		testerEtAvancer(",");
+		if ((typeid(*p) == typeid(SymboleValue)
+				&& *((SymboleValue*) p) == "<CHAINE>")) {
+			Noeud* chaine1 = m_table.chercheAjoute(m_lecteur.getSymbole());
+			vchaine->push_back(chaine1);
+		} else {
+			Noeud* exp = expression();
+			vexp->push_back(exp);
+		}
+	}
 	return nullptr;
 }
 Noeud* Interpreteur::instLire() {
+	testerEtAvancer("lire");
+	testerEtAvancer("(");
+	NoeudLire* vvar = new NoeudLire;
+	Noeud* var = m_table.chercheAjoute(m_lecteur.getSymbole());
+	vvar->ajoute(var);
+	while (m_lecteur.getSymbole() != ")") {
+		testerEtAvancer(",");
+		Noeud* var = m_table.chercheAjoute(m_lecteur.getSymbole());
+		vvar->ajoute(var);
+	}
 	return nullptr;
 }
 
