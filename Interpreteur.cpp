@@ -38,7 +38,8 @@ void Interpreteur::erreur(string const & message) const throw (SyntaxeException)
   sprintf(messageWhat,
           "Ligne %d, Colonne %d - Erreur de syntaxe - %s - Symbole trouvé : %s",
           m_lecteur.getLigne(), m_lecteur.getColonne(), message.c_str(), m_lecteur.getSymbole().getChaine().c_str());
-  throw SyntaxeException(messageWhat);
+	throw SyntaxeException(messageWhat, m_lecteur.getLigne(),
+			m_lecteur.getColonne());
 }
 
 Noeud* Interpreteur::programme() {
@@ -85,9 +86,6 @@ try {
 		return instLire();
 	} else {
 		erreur("Instruction incorrecte");
-			char const * err = "Erreur de syntaxe";
-			throw SyntaxeException(err, m_lecteur.getLigne(),
-					m_lecteur.getColonne());
 	}
 }
 catch (SyntaxeException & e) {
