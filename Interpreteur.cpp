@@ -153,73 +153,89 @@ Noeud* Interpreteur::instSi() {
 	// <instSi> ::= si ( <expression> ) <seqInst> finsi
 	testerEtAvancer("si");
 	testerEtAvancer("(");
+	NoeudPour* res = new NoeudPour;
 	Noeud* condition = expression(); // On mémorise la condition
+	res->ajoute(condition);
 	testerEtAvancer(")");
 	Noeud* sequence = seqInst();     // On mémorise la séquence d'instruction
+	res->ajoute(sequence);
 	while (m_lecteur.getSymbole() == "sinonsi") {
 		testerEtAvancer("sinonsi");
 		testerEtAvancer(")");
 		Noeud* condition = expression(); // On mémorise la condition
+		res->ajoute(condition);
 		testerEtAvancer(")");
 		Noeud* sequence = seqInst();    // On mémorise la séquence d'instruction
+		res->ajoute(sequence);
 	}
 	if (m_lecteur.getSymbole() == "sinon") {
 		testerEtAvancer("sinon");
 		Noeud* sinon = seqInst();
+		res->ajoute(sinon);
 	}
 	testerEtAvancer("finsi");
-	return nullptr;
+	return res;
 }
 
 Noeud* Interpreteur::instTantQue() {
 	testerEtAvancer("tantQue");
 	testerEtAvancer("(");
+	NoeudPour* res = new NoeudPour;
 	Noeud* expr = expression();
+	res->ajoute(expr);
 	testerEtAvancer(")");
 	Noeud* seq = seqInst();
+	res->ajoute(seq);
 	testerEtAvancer("finTantQue");
 	return nullptr;
 }
 Noeud* Interpreteur::instRepeter() {
 	testerEtAvancer("repeter");
+	NoeudPour* res = new NoeudPour;
 	Noeud* seq = seqInst();
+	res->ajoute(seq);
 	testerEtAvancer("jusqua");
 	testerEtAvancer("(");
 	Noeud* expr = expression();
+	res->ajoute(expr);
 	testerEtAvancer(")");
-	return nullptr;
+	return res;
 }
 Noeud* Interpreteur::instPour() {
 	testerEtAvancer("pour");
 	testerEtAvancer("(");
+	NoeudPour* res = new NoeudPour;
 	if (m_lecteur.getSymbole() != ";") {
 		Noeud* aff1 = affectation();
+		res->ajoute(aff1);
 	}
 	testerEtAvancer(";");
 	Noeud* exp = expression();
+	res->ajoute(exp);
 	testerEtAvancer(";");
 	if (m_lecteur.getSymbole() != ")") {
 		Noeud* aff2 = affectation();
+		res->ajoute(aff2);
 	}
 	testerEtAvancer(")");
 	Noeud* seq = seqInst();
+	res->ajoute(seq);
 	testerEtAvancer("finpour");
-	return nullptr;
+	return res;
 }
 Noeud* Interpreteur::instEcrire() {
 	testerEtAvancer("ecrire");
 	testerEtAvancer("(");
 	Noeud* p;
-	vector<Noeud*> *vchaine = new vector<Noeud*>;
-	vector<Noeud*> *vexp = new vector<Noeud*>;
+	NoeudEcrire *vchaine = new NoeudEcrire;
 	// on regarde si l’objet pointé par p est de type SymboleValue et si c’est une chaîne
 	if ((typeid(*p) == typeid(SymboleValue)
 			&& *((SymboleValue*) p) == "<CHAINE>")) {
 		Noeud* chaine1 = m_table.chercheAjoute(m_lecteur.getSymbole());
-		vchaine->push_back(chaine1);
+		vchaine->ajoute(chaine1);
 	} else {
 		Noeud* exp = expression();
-		vexp->push_back(exp);
+		vchaine->ajoute(exp);
 	}
 	m_lecteur.avancer();
 	while (m_lecteur.getSymbole() != ")") {
@@ -227,13 +243,13 @@ Noeud* Interpreteur::instEcrire() {
 		if ((typeid(*p) == typeid(SymboleValue)
 				&& *((SymboleValue*) p) == "<CHAINE>")) {
 			Noeud* chaine1 = m_table.chercheAjoute(m_lecteur.getSymbole());
-			vchaine->push_back(chaine1);
+			vchaine->ajoute(chaine1);
 		} else {
 			Noeud* exp = expression();
-			vexp->push_back(exp);
+			vchaine->ajoute(exp);
 		}
 	}
-	return nullptr;
+	return vchaine;
 }
 Noeud* Interpreteur::instLire() {
 	testerEtAvancer("lire");
@@ -246,7 +262,7 @@ Noeud* Interpreteur::instLire() {
 		Noeud* var = m_table.chercheAjoute(m_lecteur.getSymbole());
 		vvar->ajoute(var);
 	}
-	return nullptr;
+	return vvar;
 }
 
 

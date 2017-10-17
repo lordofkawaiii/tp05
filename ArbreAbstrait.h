@@ -50,6 +50,36 @@ public:
 private:
 	vector<Noeud *> m_variable; // pour stocker les instructions de la séquence
 };
+////////////////////////////////////////////////////////////////////////////////
+
+class NoeudEcrire: public Noeud {
+// Classe pour représenter un noeud "sequence d'instruction"
+//  qui a autant de fils que d'instructions dans la séquence
+public:
+	NoeudEcrire();   // Construit une séquence d'instruction vide
+	~NoeudEcrire() {
+	} // A cause du destructeur virtuel de la classe Noeud
+	int executer();    // Exécute chaque instruction de la séquence
+	void ajoute(Noeud* instruction);  // Ajoute une instruction à la séquence
+
+private:
+	vector<Noeud *> m_variable; // pour stocker les instructions de la séquence
+};
+////////////////////////////////////////////////////////////////////////////////
+
+class NoeudPour: public Noeud {
+// Classe pour représenter un noeud "sequence d'instruction"
+//  qui a autant de fils que d'instructions dans la séquence
+public:
+	NoeudPour();   // Construit une séquence d'instruction vide
+	~NoeudPour() {
+	} // A cause du destructeur virtuel de la classe Noeud
+	int executer();    // Exécute chaque instruction de la séquence
+	void ajoute(Noeud* instruction);  // Ajoute une instruction à la séquence
+
+private:
+	vector<Noeud *> m_variable; // pour stocker les instructions de la séquence
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 class NoeudAffectation : public Noeud {
