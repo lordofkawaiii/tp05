@@ -11,7 +11,8 @@ void Interpreteur::analyse() {
   m_arbre = programme(); // on lance l'analyse de la première règle
 }
 
-void Interpreteur::tester(const string & symboleAttendu) const throw (SyntaxeException) {
+void Interpreteur::tester(string const & symboleAttendu) const
+		throw (SyntaxeException) {
   // Teste si le symbole courant est égal au symboleAttendu... Si non, lève une exception
   static char messageWhat[256];
   if (m_lecteur.getSymbole() != symboleAttendu) {
@@ -23,13 +24,14 @@ void Interpreteur::tester(const string & symboleAttendu) const throw (SyntaxeExc
   }
 }
 
-void Interpreteur::testerEtAvancer(const string & symboleAttendu) throw (SyntaxeException) {
+void Interpreteur::testerEtAvancer(string const & symboleAttendu)
+		throw (SyntaxeException) {
   // Teste si le symbole courant est égal au symboleAttendu... Si oui, avance, Sinon, lève une exception
   tester(symboleAttendu);
   m_lecteur.avancer();
 }
 
-void Interpreteur::erreur(const string & message) const throw (SyntaxeException) {
+void Interpreteur::erreur(string const & message) const throw (SyntaxeException) {
   // Lève une exception contenant le message et le symbole courant trouvé
   // Utilisé lorsqu'il y a plusieurs symboles attendus possibles...
   static char messageWhat[256];
@@ -68,15 +70,25 @@ Noeud* Interpreteur::inst() {
     Noeud *affect = affectation();
     testerEtAvancer(";");
     return affect;
+	} else if (m_lecteur.getSymbole() == "si") {
+		return instSi();
+	} else if (m_lecteur.getSymbole() == "tantque") {
+		return instTantQue();
+	} else if (m_lecteur.getSymbole() == "repeter") {
+		return instRepeter();
+	} else if (m_lecteur.getSymbole() == "pour") {
+		return instPour();
+	} else if (m_lecteur.getSymbole() == "ecrire") {
+		return instEcrire();
+	} else if (m_lecteur.getSymbole() == "lire") {
+		return instLire();
+	} else {
+		erreur("Instruction incorrecte");
   }
-  else if (m_lecteur.getSymbole() == "si")
-    return instSi();
-  // Compléter les alternatives chaque fois qu'on rajoute une nouvelle instruction
-  else erreur("Instruction incorrecte");
 }
 
 Noeud* Interpreteur::affectation() {
-  // <affectation> ::= <variable> = <expression> 
+  // <affectation> ::= <variable> = <expression>
   tester("<VARIABLE>");
   Noeud* var = m_table.chercheAjoute(m_lecteur.getSymbole()); // La variable est ajoutée à la table eton la mémorise
   m_lecteur.avancer();
@@ -127,13 +139,72 @@ Noeud* Interpreteur::facteur() {
 }
 
 Noeud* Interpreteur::instSi() {
-  // <instSi> ::= si ( <expression> ) <seqInst> finsi
-  testerEtAvancer("si");
-  testerEtAvancer("(");
-  Noeud* condition = expression(); // On mémorise la condition
-  testerEtAvancer(")");
-  Noeud* sequence = seqInst();     // On mémorise la séquence d'instruction
-  testerEtAvancer("finsi");
-  return new NoeudInstSi(condition, sequence); // Et on renvoie un noeud Instruction Si
+	// <instSi> ::= si ( <expression> ) <seqInst> finsi
+	testerEtAvancer("si");
+	testerEtAvancer("(");
+	Noeud* condition = expression(); // On mémorise la condition
+	testerEtAvancer(")");
+	Noeud* sequence = seqInst();     // On mémorise la séquence d'instruction
+	while (m_lecteur.getSymbole() == "sinonsi") {
+		testerEtAvancer("sinonsi");
+		testerEtAvancer(")");
+		Noeud* condition = expression(); // On mémorise la condition
+		testerEtAvancer(")");
+		Noeud* sequence = seqInst();    // On mémorise la séquence d'instruction
+	}
+	if (m_lecteur.getSymbole() == "sinon") {
+		testerEtAvancer("sinon");
+		Noeud* sinon = seqInst();
+	}
+	testerEtAvancer("finsi");
+	return nullptr;
 }
+
+Noeud* Interpreteur::instTantQue() {
+	testerEtAvancer("tantQue");
+	testerEtAvancer("(");
+	Noeud* expr = expression();
+	testerEtAvancer(")");
+	Noeud* seq = seqInst();
+	testerEtAvancer("finTantQue");
+	return nullptr;
+}
+Noeud* Interpreteur::instRepeter() {
+	testerEtAvancer("repeter");
+	Noeud* seq = seqInst();
+	testerEtAvancer("jusqua");
+	testerEtAvancer("(");
+	Noeud* expr = expression();
+	testerEtAvancer(")");
+	return nullptr;
+}
+Noeud* Interpreteur::instPour() {
+	testerEtAvancer("pour");
+	testerEtAvancer("(");
+	if (m_lecteur.getSymbole() != ";") {
+		Noeud* aff1 = affectation();
+	}
+	testerEtAvancer(";");
+	Noeud* exp = expression();
+	testerEtAvancer(";");
+	if (m_lecteur.getSymbole() != ")") {
+		Noeud* aff2 = affectation();
+	}
+	testerEtAvancer(")");
+	Noeud* seq = seqInst();
+	testerEtAvancer("finpour");
+	return nullptr;
+}
+Noeud* Interpreteur::instEcrire() {
+	testerEtAvancer("ecrire");
+	testerEtAvancer("(");
+	// on regarde si l’objet pointé par p est de type SymboleValue et si c’est une chaîne
+if ( (typeid(*p)==typeid(SymboleValue) && *((SymboleValue*)p)== "<CHAINE>" ) ...
+
+	return nullptr;
+}
+Noeud* Interpreteur::instLire() {
+	return nullptr;
+}
+
 
