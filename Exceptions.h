@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   Exceptions.h
  * Author: martin
  *
@@ -14,32 +14,45 @@ using namespace std;
 // Classe mère de toutes les exceptions de l'interpréteur
 class InterpreteurException : public exception {
 public:
-    const char * what() const throw() {
+	char const * what() const throw () {
         return "Exception Interpreteur";
     }
 };
 
 class FichierException : public InterpreteurException {
 public:
-    const char * what() const throw() {
+	char const * what() const throw () {
         return "Ouverture Fichier Impossible";
     }
 };
 
 class SyntaxeException : public InterpreteurException {
 public:
-    SyntaxeException(const char * message = NULL) : m_message(message) {}
-    const char * what() const throw() {
+	SyntaxeException(char const * message = NULL, unsigned int line = 0,
+			unsigned int column = 0) :
+			m_message(message) {
+		m_line = line;
+		m_column = column;
+	}
+	char const * what() const throw () {
         return m_message;
     }
+	unsigned int getLine() {
+		return m_line;
+	}
+	unsigned int getColumn() {
+		return m_column;
+	}
 private :
-    const char* m_message;
+	char const * m_message;
+	unsigned int m_line;
+	unsigned int m_column;
 };
 
 
 class IndefiniException : public InterpreteurException {
 public:
-    const char * what() const throw() {
+	char const * what() const throw () {
         return "Valeur Indéfinie";
     }
 };
@@ -47,14 +60,14 @@ public:
 
 class DivParZeroException : public InterpreteurException {
 public:
-    const char * what() const throw() {
+	char const * what() const throw () {
         return "Division par 0";
     }
 };
 
 class OperationInterditeException : public InterpreteurException {
 public:
-    const char * what() const throw() {
+	char const * what() const throw () {
         return "Operation Interdite sur un noeud";
     }
 };
