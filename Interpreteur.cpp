@@ -66,10 +66,11 @@ Noeud* Interpreteur::seqInst() {
 
 Noeud* Interpreteur::inst() {
   // <inst> ::= <affectation>  ; | <instSi>
-  if (m_lecteur.getSymbole() == "<VARIABLE>") {
-    Noeud *affect = affectation();
-    testerEtAvancer(";");
-    return affect;
+try {
+	if (m_lecteur.getSymbole() == "<VARIABLE>") {
+		Noeud *affect = affectation();
+		testerEtAvancer(";");
+		return affect;
 	} else if (m_lecteur.getSymbole() == "si") {
 		return instSi();
 	} else if (m_lecteur.getSymbole() == "tantque") {
@@ -84,7 +85,17 @@ Noeud* Interpreteur::inst() {
 		return instLire();
 	} else {
 		erreur("Instruction incorrecte");
-  }
+			char const * err = "Erreur de syntaxe";
+			throw SyntaxeException(err, m_lecteur.getLigne(),
+					m_lecteur.getColonne());
+	}
+}
+catch (SyntaxeException & e) {
+		cout << e.what() << " à la ligne : " << e.getLine() << " colonne : "
+				<< e.getColumn() << endl;
+		throw;
+	}
+
 }
 
 Noeud* Interpreteur::affectation() {
