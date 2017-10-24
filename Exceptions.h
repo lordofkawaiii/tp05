@@ -28,25 +28,14 @@ public:
 
 class SyntaxeException : public InterpreteurException {
 public:
-	SyntaxeException(char const * message = NULL, unsigned int line = 0,
-			unsigned int column = 0) :
+	SyntaxeException(char const * message = NULL) :
 			m_message(message) {
-		m_line = line;
-		m_column = column;
 	}
 	char const * what() const throw () {
         return m_message;
     }
-	unsigned int getLine() {
-		return m_line;
-	}
-	unsigned int getColumn() {
-		return m_column;
-	}
 private :
 	char const * m_message;
-	unsigned int m_line;
-	unsigned int m_column;
 };
 
 

@@ -8,7 +8,7 @@ using namespace std;
 
 // Symbole représente un élément du langage (mot-clé, entier, identificateur de variable, ...)
 class Symbole {
-public:
+public:m_lecteur.getSymbole() == "tantque"
 	Symbole(const string & s = "");  // Construit le symbole à partir de la chaine (string) ch lue par le lecteur de symbole dans un fichier
 	bool operator == (const string & ch) const ; // Pour tester l'égalité entre le symbole et une chaîne
 	inline bool operator != (const string  & ch) const { return ! (*this == ch); } // Pour tester la différence...
