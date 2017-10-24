@@ -1,6 +1,12 @@
 #include "Interpreteur.h"
-#include <stdlib.h>
+
+#include <cstdio>
 #include <iostream>
+#include <string>
+#include <typeinfo>
+
+#include "SymboleValue.h"
+
 using namespace std;
 
 Interpreteur::Interpreteur(ifstream & fichier) :
@@ -38,8 +44,7 @@ void Interpreteur::erreur(string const & message) const throw (SyntaxeException)
   sprintf(messageWhat,
           "Ligne %d, Colonne %d - Erreur de syntaxe - %s - Symbole trouvé : %s",
           m_lecteur.getLigne(), m_lecteur.getColonne(), message.c_str(), m_lecteur.getSymbole().getChaine().c_str());
-	throw SyntaxeException(messageWhat, m_lecteur.getLigne(),
-			m_lecteur.getColonne());
+	throw SyntaxeException(messageWhat);
 }
 
 Noeud* Interpreteur::programme() {
@@ -55,7 +60,7 @@ Noeud* Interpreteur::programme() {
 }
 
 Noeud* Interpreteur::seqInst() {
-  // <seqInst> ::= <inst> { <inst> }
+	// <seqInst> ::= <inst> { <im_instructionsm_instructionsnst> }
   NoeudSeqInst* sequence = new NoeudSeqInst();
   do {
     sequence->ajoute(inst());
@@ -160,69 +165,116 @@ Noeud* Interpreteur::instSi() {
 	// <instSi> ::= si ( <expression> ) <seqInst> finsi
 	testerEtAvancer("si");
 	testerEtAvancer("(");
+	NoeudPour* res = new NoeudPour;
 	Noeud* condition = expression(); // On mémorise la condition
+	res->ajoute(condition);
 	testerEtAvancer(")");
 	Noeud* sequence = seqInst();     // On mémorise la séquence d'instruction
+	res->ajoute(sequence);
 	while (m_lecteur.getSymbole() == "sinonsi") {
 		testerEtAvancer("sinonsi");
 		testerEtAvancer(")");
 		Noeud* condition = expression(); // On mémorise la condition
+		res->ajoute(condition);
 		testerEtAvancer(")");
 		Noeud* sequence = seqInst();    // On mémorise la séquence d'instruction
+		res->ajoute(sequence);
 	}
 	if (m_lecteur.getSymbole() == "sinon") {
 		testerEtAvancer("sinon");
 		Noeud* sinon = seqInst();
+		res->ajoute(sinon);
 	}
 	testerEtAvancer("finsi");
-	return nullptr;
+	return res;
 }
 
 Noeud* Interpreteur::instTantQue() {
 	testerEtAvancer("tantQue");
 	testerEtAvancer("(");
+	NoeudPour* res = new NoeudPour;
 	Noeud* expr = expression();
+	res->ajoute(expr);
 	testerEtAvancer(")");
 	Noeud* seq = seqInst();
+	res->ajoute(seq);
 	testerEtAvancer("finTantQue");
 	return nullptr;
 }
 Noeud* Interpreteur::instRepeter() {
 	testerEtAvancer("repeter");
+	NoeudPour* res = new NoeudPour;
 	Noeud* seq = seqInst();
+	res->ajoute(seq);
 	testerEtAvancer("jusqua");
 	testerEtAvancer("(");
 	Noeud* expr = expression();
+	res->ajoute(expr);
 	testerEtAvancer(")");
-	return nullptr;
+	return res;
 }
 Noeud* Interpreteur::instPour() {
 	testerEtAvancer("pour");
 	testerEtAvancer("(");
+	NoeudPour* res = new NoeudPour;
 	if (m_lecteur.getSymbole() != ";") {
 		Noeud* aff1 = affectation();
+		res->ajoute(aff1);
 	}
 	testerEtAvancer(";");
 	Noeud* exp = expression();
+	res->ajoute(exp);
 	testerEtAvancer(";");
 	if (m_lecteur.getSymbole() != ")") {
 		Noeud* aff2 = affectation();
+		res->ajoute(aff2);
 	}
 	testerEtAvancer(")");
 	Noeud* seq = seqInst();
+	res->ajoute(seq);
 	testerEtAvancer("finpour");
-	return nullptr;
+	return res;
 }
 Noeud* Interpreteur::instEcrire() {
 	testerEtAvancer("ecrire");
 	testerEtAvancer("(");
+	Noeud* p;
+	NoeudEcrire *vchaine = new NoeudEcrire;
 	// on regarde si l’objet pointé par p est de type SymboleValue et si c’est une chaîne
-if ( (typeid(*p)==typeid(SymboleValue) && *((SymboleValue*)p)== "<CHAINE>" ) ...
-
-	return nullptr;
+	if ((typeid(*p) == typeid(SymboleValue)
+			&& *((SymboleValue*) p) == "<CHAINE>")) {
+		Noeud* chaine1 = m_table.chercheAjoute(m_lecteur.getSymbole());
+		vchaine->ajoute(chaine1);
+	} else {
+		Noeud* exp = expression();
+		vchaine->ajoute(exp);
+	}
+	m_lecteur.avancer();
+	while (m_lecteur.getSymbole() != ")") {
+		testerEtAvancer(",");
+		if ((typeid(*p) == typeid(SymboleValue)
+				&& *((SymboleValue*) p) == "<CHAINE>")) {
+			Noeud* chaine1 = m_table.chercheAjoute(m_lecteur.getSymbole());
+			vchaine->ajoute(chaine1);
+		} else {
+			Noeud* exp = expression();
+			vchaine->ajoute(exp);
+		}
+	}
+	return vchaine;
 }
 Noeud* Interpreteur::instLire() {
-	return nullptr;
+	testerEtAvancer("lire");
+	testerEtAvancer("(");
+	NoeudLire* vvar = new NoeudLire;
+	Noeud* var = m_table.chercheAjoute(m_lecteur.getSymbole());
+	vvar->ajoute(var);
+	while (m_lecteur.getSymbole() != ")") {
+		testerEtAvancer(",");
+		Noeud* var = m_table.chercheAjoute(m_lecteur.getSymbole());
+		vvar->ajoute(var);
+	}
+	return vvar;
 }
 
 

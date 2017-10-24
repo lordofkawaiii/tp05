@@ -20,7 +20,60 @@ int NoeudSeqInst::executer() {
 void NoeudSeqInst::ajoute(Noeud* instruction) {
   if (instruction!=nullptr) m_instructions.push_back(instruction);
 }
+////////////////////////////////////////////////////////////////////////////////
+// NoeudLire
+////////////////////////////////////////////////////////////////////////////////
 
+NoeudLire::NoeudLire() :
+		m_variable() {
+}
+
+int NoeudLire::executer() {
+	for (unsigned int i = 0; i < m_variable.size(); i++)
+		m_variable[i]->executer(); // on exécute chaque instruction de la séquence
+	return 0; // La valeur renvoyée ne représente rien !
+}
+
+void NoeudLire::ajoute(Noeud* instruction) {
+	if (instruction != nullptr)
+		m_variable.push_back(instruction);
+}
+////////////////////////////////////////////////////////////////////////////////
+// NoeudEcrire
+////////////////////////////////////////////////////////////////////////////////
+
+NoeudEcrire::NoeudEcrire() :
+		m_variable() {
+}
+
+int NoeudEcrire::executer() {
+	for (unsigned int i = 0; i < m_variable.size(); i++)
+		m_variable[i]->executer(); // on exécute chaque instruction de la séquence
+	return 0; // La valeur renvoyée ne représente rien !
+}
+
+void NoeudEcrire::ajoute(Noeud* instruction) {
+	if (instruction != nullptr)
+		m_variable.push_back(instruction);
+}
+////////////////////////////////////////////////////////////////////////////////
+// NoeudPour
+////////////////////////////////////////////////////////////////////////////////
+
+NoeudPour::NoeudPour() :
+		m_variable() {
+}
+
+int NoeudPour::executer() {
+	for (unsigned int i = 0; i < m_variable.size(); i++)
+		m_variable[i]->executer(); // on exécute chaque instruction de la séquence
+	return 0; // La valeur renvoyée ne représente rien !
+}
+
+void NoeudPour::ajoute(Noeud* instruction) {
+	if (instruction != nullptr)
+		m_variable.push_back(instruction);
+}
 ////////////////////////////////////////////////////////////////////////////////
 // NoeudAffectation
 ////////////////////////////////////////////////////////////////////////////////
