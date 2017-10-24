@@ -58,7 +58,13 @@ Noeud* Interpreteur::seqInst() {
   NoeudSeqInst* sequence = new NoeudSeqInst();
   do {
     sequence->ajoute(inst());
-  } while (m_lecteur.getSymbole() == "<VARIABLE>" || m_lecteur.getSymbole() == "si");
+	} while (m_lecteur.getSymbole() == "<VARIABLE>"
+			|| m_lecteur.getSymbole() == "si"
+			|| m_lecteur.getSymbole() == "tantque"
+			|| m_lecteur.getSymbole() == "repeter"
+			|| m_lecteur.getSymbole() == "pour"
+			|| m_lecteur.getSymbole() == "ecrire"
+			|| m_lecteur.getSymbole() == "lire");
   // Tant que le symbole courant est un début possible d'instruction...
   // Il faut compléter cette condition chaque fois qu'on rajoute une nouvelle instruction
   return sequence;
@@ -91,8 +97,12 @@ try {
 	}
 }
 catch (SyntaxeException & e) {
-		cout << e.what() << " à la ligne : " << e.getLine() << " colonne : "
-				<< e.getColumn() << endl;
+		Symbole x = m_lecteur.getSymbole();
+		Symbole y = m_lecteur.getSymbole();
+		while (x.getChaine() == y.getChaine()) {
+			m_lecteur.avancer();
+			y = m_lecteur.getSymbole();
+		}
 		throw;
 	}
 
