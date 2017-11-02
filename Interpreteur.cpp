@@ -91,9 +91,6 @@ try {
 		return instLire();
 	} else {
 		erreur("Instruction incorrecte");
-			char const * err = "Erreur de syntaxe";
-			throw SyntaxeException(err, m_lecteur.getLigne(),
-					m_lecteur.getColonne());
 	}
 }
 catch (SyntaxeException & e) {
@@ -103,7 +100,6 @@ catch (SyntaxeException & e) {
 			m_lecteur.avancer();
 			y = m_lecteur.getSymbole();
 		}
-		throw;
 	}
 
 }
