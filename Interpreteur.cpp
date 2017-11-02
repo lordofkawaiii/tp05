@@ -91,19 +91,17 @@ try {
 		return instLire();
 	} else {
 		erreur("Instruction incorrecte");
-			char const * err = "Erreur de syntaxe";
-			throw SyntaxeException(err, m_lecteur.getLigne(),
-					m_lecteur.getColonne());
+			return nullptr;
 	}
 }
 catch (SyntaxeException & e) {
+		cerr << e.what() << endl;
 		Symbole x = m_lecteur.getSymbole();
-		Symbole y = m_lecteur.getSymbole();
-		while (x.getChaine() == y.getChaine()) {
+		while (!(x == "si" || x == "tantque"
+				|| x == "repeter" || x == "pour" || x == "ecrire" || x == "lire")) {
 			m_lecteur.avancer();
-			y = m_lecteur.getSymbole();
+			x = m_lecteur.getSymbole();
 		}
-		throw;
 	}
 
 }
@@ -188,7 +186,7 @@ Noeud* Interpreteur::instSi() {
 }
 
 Noeud* Interpreteur::instTantQue() {
-	testerEtAvancer("tantQue");
+	testerEtAvancer("tantque");
 	testerEtAvancer("(");
 	NoeudPour* res = new NoeudPour;
 	Noeud* expr = expression();
