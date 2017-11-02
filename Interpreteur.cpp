@@ -92,6 +92,7 @@ try {
 	} else {
 		erreur("Instruction incorrecte");
 			return nullptr;
+			return nullptr;
 	}
 }
 catch (SyntaxeException & e) {

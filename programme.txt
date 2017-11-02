@@ -5,7 +5,7 @@ procedure principale()
   si i>14)
     j=1;
   finsi
-  tantque j=1)
+  tantque j=1) 
   	j=j+1;
   fintantque
 finproc
