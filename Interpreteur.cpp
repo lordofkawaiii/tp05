@@ -73,28 +73,39 @@ Noeud* Interpreteur::seqInst() {
 Noeud* Interpreteur::inst() {
   // <inst> ::= <affectation>  ; | <instSi>
 try {
-	if (m_lecteur.getSymbole() == "<VARIABLE>") {
-		Noeud *affect = affectation();
-		testerEtAvancer(";");
-		return affect;
-	} else if (m_lecteur.getSymbole() == "si") {
-		return instSi();
-	} else if (m_lecteur.getSymbole() == "tantque") {
-		return instTantQue();
-	} else if (m_lecteur.getSymbole() == "repeter") {
-		return instRepeter();
-	} else if (m_lecteur.getSymbole() == "pour") {
-		return instPour();
-	} else if (m_lecteur.getSymbole() == "ecrire") {
-		return instEcrire();
-	} else if (m_lecteur.getSymbole() == "lire") {
-		return instLire();
-	} else {
-		erreur("Instruction incorrecte");
+		if (m_lecteur.getSymbole() == "<VARIABLE>") {
+			Noeud *affect = affectation();
+			testerEtAvancer(";");
+			return affect;
+		} else if (m_lecteur.getSymbole() == "si") {
+			Noeud *si = instSi();
+			testerEtAvancer(";");
+			return si;
+		} else if (m_lecteur.getSymbole() == "tantque") {
+			Noeud *tantQue = instTantQue();
+			testerEtAvancer(";");
+			return tantQue;
+		} else if (m_lecteur.getSymbole() == "repeter") {
+			Noeud *repeter = instRepeter();
+			testerEtAvancer(";");
+			return repeter;
+		} else if (m_lecteur.getSymbole() == "pour") {
+			Noeud *pour = instPour();
+			testerEtAvancer(";");
+			return pour;
+		} else if (m_lecteur.getSymbole() == "ecrire") {
+			Noeud *ecrire = instEcrire();
+			testerEtAvancer(";");
+			return ecrire;
+		} else if (m_lecteur.getSymbole() == "lire") {
+			Noeud *lire = instLire();
+			testerEtAvancer(";");
+			return lire;
+		} else {
+			erreur("Instruction incorrecte");
 			return nullptr;
-			return nullptr;
+		}
 	}
-}
 catch (SyntaxeException & e) {
 		cerr << e.what() << endl;
 		Symbole x = m_lecteur.getSymbole();
@@ -195,8 +206,8 @@ Noeud* Interpreteur::instTantQue() {
 	testerEtAvancer(")");
 	Noeud* seq = seqInst();
 	res->ajoute(seq);
-	testerEtAvancer("finTantQue");
-	return nullptr;
+	testerEtAvancer("fintantque");
+	return res;
 }
 Noeud* Interpreteur::instRepeter() {
 	testerEtAvancer("repeter");

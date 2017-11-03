@@ -1,0 +1,14 @@
+# Test du tantQue
+# Résultat attendu : 
+# test1 = 3
+# test2 = 0
+procedure principale() 
+  test1 = 0 ; 
+  tantque (test1 < 3)
+    test1 = test + 1 ; 
+  fintantque ; 
+  test2 = 0 ; 
+  tantque (test2 < 0)
+    test2 = 2 ; 
+  fintantque ; 
+finproc 

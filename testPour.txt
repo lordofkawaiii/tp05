@@ -1,0 +1,14 @@
+# Test du pour
+# Résultat attendu : 
+# test1 = 8
+# test2 = 2
+procedure principale() 
+  test1 = 0 ; 
+  pour (; test1 < 9;)
+    test1 = test + 1 ; 
+  finpour ; 
+  test2 = 0 ; 
+  pour (;test2 <= 0;)
+    test2 = 2 ; 
+  finpour; 
+finproc 
