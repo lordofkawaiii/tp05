@@ -132,3 +132,59 @@ int NoeudInstSi::executer() {
   if (m_condition->executer()) m_sequence->executer();
   return 0; // La valeur renvoyée ne représente rien !
 }
+
+void NoeudInstSi::traduitEnCPP(ostream & cout, unsigned int indentation) const {
+	cout << setw(4 * indentation) << "" << "if (";
+	// Ecrit "if (" avec un décalage de 4*indentation espaces
+	m_condition->traduitEnCPP(cout, 0);
+	// Traduit la condition en C++ sans décalage
+	cout << ") {" << endl;
+	// Ecrit ") {" et passe à la ligne
+	m_sequence->traduitEnCPP(cout, indentation + 1);
+	// Traduit en C++ la séquence avec indentation augmentée
+	cout << setw(4 * indentation) << "" << "}" << endl;
+	// Ecrit "}" avec l'indentation initiale et passe à la ligne
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// NoeudInstTantQue
+////////////////////////////////////////////////////////////////////////////////
+
+NoeudInstTantQue::NoeudInstTantQue(Noeud* condition, Noeud* sequence) :
+		m_condition(condition), m_sequence(sequence) {
+}
+
+int NoeudInstTantQue::executer() {
+	if (m_condition->executer())
+		m_sequence->executer();
+	return 0;
+}
+
+void NoeudInstTantQue::traduitEnCpp(ostream & cout, unsigned int indentation) {
+	cout << setw(4 * indentation) << "" << "while (";
+	// Ecrit "while (" avec un decalage de 4*indentation espaces
+	m_condition->traduitEnCpp(cout, 0);
+	// Traduit la condition en C++ sans decalage
+	cout << ") {" << endl;
+	// Ecrit ") {" et passe a la ligne
+	m_sequence->traduitEnCpp(cout, indentation + 1);
+	// Traduit en C++ la sequence avec indentation augmentée
+	cout << setw(4 * indentation) << "" << "}" << endl;
+	// Ecrit "}" avec l'indentation initiale et passe à la ligne
+}
+////////////////////////////////////////////////////////////////////////////////
+// NoeudInstRepeter
+////////////////////////////////////////////////////////////////////////////////
+
+NoeudInstRepeter::NoeudInstRepeter(Noeud* limite, Noeud* sequence) :
+		m_limite(limite), m_sequence(sequence) {
+}
+
+int NoeudInstRepeter::executer() {
+
+	return 0;
+}
+
+void NoeudInstRepeter::traduitEnCpp(ostream & cout, unsigned int indentation) {
+
+}
