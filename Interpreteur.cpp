@@ -294,9 +294,10 @@ void Interpreteur::traduitEnCPP(ostream & cout,
 	for (unsigned int i = 0; i <= tableArbre.getTaille(); ++i) {
 		if (tableArbre[i] == "<VARIABLE>") {
 			try {
+        SymboleValue elem = tableArbre[i];
 				cout << setw(4 * (indentation + 1)) << "int "
 						<< tableArbre[i].getChaine() << " = "
-						<< tableArbre[i].executer() << ";" << endl;
+            << elem.executer() << ";" << endl;
 			}
 			catch (IndefiniException & e) {
 				cout << setw(4 * (indentation + 1)) << "int "
