@@ -42,37 +42,35 @@ void NoeudLire::ajoute(Noeud* instruction) {
 // NoeudEcrire
 ////////////////////////////////////////////////////////////////////////////////
 
-NoeudEcrire::NoeudEcrire() :
-		m_variable() {
+NoeudEcrire::NoeudEcrire() {
 }
 
 int NoeudEcrire::executer() {
-	for (unsigned int i = 0; i < m_variable.size(); i++)
-		m_variable[i]->executer(); // on exécute chaque instruction de la séquence
 	return 0; // La valeur renvoyée ne représente rien !
 }
 
-void NoeudEcrire::ajoute(Noeud* instruction) {
-	if (instruction != nullptr)
-		m_variable.push_back(instruction);
-}
 ////////////////////////////////////////////////////////////////////////////////
 // NoeudPour
 ////////////////////////////////////////////////////////////////////////////////
 
 NoeudPour::NoeudPour() :
-		m_variable() {
+{
 }
 
 int NoeudPour::executer() {
-	for (unsigned int i = 0; i < m_variable.size(); i++)
-		m_variable[i]->executer(); // on exécute chaque instruction de la séquence
+
 	return 0; // La valeur renvoyée ne représente rien !
 }
 
-void NoeudPour::ajoute(Noeud* instruction) {
-	if (instruction != nullptr)
-		m_variable.push_back(instruction);
+void NoeudPour::traduitEnCpp(ostream & cout, unsigned int indentation) {
+	cout << setw(4 * indentation) << "" << "for (";
+	m_affectationI->traduitEnCpp(cout, 0);
+	cout << " ; ";
+	m_expression->traduitEnCpp(cout, 0);
+	cout << " ; ";
+	m_affectationIncrementaton->traduitEnCpp(cout, 0);
+	cout << ") {" << endl;
+	m_sequence->traduitEnCpp(cout, indentation + 1);
 }
 ////////////////////////////////////////////////////////////////////////////////
 // NoeudAffectation
@@ -88,6 +86,10 @@ int NoeudAffectation::executer() {
   return 0; // La valeur renvoyée ne représente rien !
 }
 
+void NoeudAffectation::traduitEnCpp(ostream & cout, unsigned int indentation) {
+	cout << setw(4 * indentation) << m_variable->executer() << " = "
+			<< m_expression->executer() << endl;
+}
 ////////////////////////////////////////////////////////////////////////////////
 // NoeudOperateurBinaire
 ////////////////////////////////////////////////////////////////////////////////
@@ -118,6 +120,12 @@ int NoeudOperateurBinaire::executer() {
     valeur = og / od;
   }
   return valeur; // On retourne la valeur calculée
+}
+
+void NoeudOperateurBinaire::traduitEnCpp(ostream & cout,
+		unsigned int indentation) {
+	cout << setw(4 * indentation) << "" << m_operandeGauche->executer() << " "
+			<< m_operateur << " " << m_operandeDroit->executer() << endl;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -186,5 +194,14 @@ int NoeudInstRepeter::executer() {
 }
 
 void NoeudInstRepeter::traduitEnCpp(ostream & cout, unsigned int indentation) {
-
+	cout << setw(4 * indentation) << "" << "do {" << endl;
+	// Ecrit "do {" avec un decalage de 4*indentation espaces
+	m_sequence->traduitEnCpp(cout, 0);
+	// Traduit la sequence en C++ sans decalage
+	cout << "} while (";
+	// Ecrit } while (
+	m_limite->traduitEnCpp(cout, 0);
+	// Ecrit la limite en C++ sans decalage
+	cout << ") ;" << endl;
+	// Ecrit ) ; et passe a la ligne
 }

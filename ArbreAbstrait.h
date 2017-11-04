@@ -61,25 +61,26 @@ public:
 	~NoeudEcrire() {
 	} // A cause du destructeur virtuel de la classe Noeud
 	int executer();    // Exécute chaque instruction de la séquence
-	void ajoute(Noeud* instruction);  // Ajoute une instruction à la séquence
 	void traduitEnCpp(ostream & cout, unsigned int indentation) const;
 private:
-	vector<Noeud *> m_variable; // pour stocker les instructions de la séquence
+
 };
 ////////////////////////////////////////////////////////////////////////////////
 
 class NoeudPour: public Noeud {
-// Classe pour représenter un noeud "sequence d'instruction"
-//  qui a autant de fils que d'instructions dans la séquence
+// Classe pour représenter un noeud "pour"
+//  composé d'une sequence d'instruction 2 affectation et 1 expression
 public:
 	NoeudPour();   // Construit une séquence d'instruction vide
 	~NoeudPour() {
 	} // A cause du destructeur virtuel de la classe Noeud
 	int executer();    // Exécute chaque instruction de la séquence
-	void ajoute(Noeud* instruction);  // Ajoute une instruction à la séquence
 	void traduitEnCpp(ostream & cout, unsigned int indentation) const;
 private:
-	vector<Noeud *> m_variable; // pour stocker les instructions de la séquence
+	Noeud* m_sequence;
+	Noeud* m_expression;
+	Noeud* m_affectationI;
+	Noeud* m_affectationIncrementaton;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -124,7 +125,7 @@ class NoeudInstSi : public Noeud {
 	void traduitEnCpp(ostream & cout, unsigned int indentation) const;
   private:
     Noeud*  m_condition;
-    Noeud*  m_sequence;
+	NoeudSeqInst* m_sequence;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -140,7 +141,7 @@ public:
 	void traduitEnCpp(ostream & cout, unsigned int indentation) const;
 private:
 	Noeud* m_condition;
-	Noeud* m_sequence;
+	NoeudSeqInst* m_sequence;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -156,7 +157,7 @@ public:
 	void traduitEnCpp(ostream & cout, unsigned int indentation) const;
 private:
 	Noeud* m_limite;
-	Noeud* m_sequence;
+	NoeudSeqInst* m_sequence;
 };
 
 #endif /* ARBREABSTRAIT_H */
