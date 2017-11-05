@@ -134,10 +134,11 @@ class NoeudInstTantQue: public Noeud {
 public:
 	NoeudInstTantQue(Noeud* condition, Noeud* sequence);
 	// Construit une "instruction tant que" avec sa condition et sa séquence d'instruction
-	~NoeudInstTantQue() {
-	} // A cause du destructeur virtuel de la classe Noeud
+  ~NoeudInstTantQue()
+  {
+  } // A cause du destructeur virtuel de la classe Noeud
 	int executer(); // Exécute l'instruction tant que : si condition vraie on exécute la séquence
-	void traduitEnCpp(ostream & cout, unsigned int indentation) const;
+  void traduitEnCpp(ostream & cout, unsigned int indentation) const;
 private:
 	Noeud* m_condition;
 	Noeud* m_sequence;

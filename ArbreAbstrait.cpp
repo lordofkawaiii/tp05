@@ -133,14 +133,15 @@ int NoeudInstSi::executer() {
   return 0; // La valeur renvoyée ne représente rien !
 }
 
-void NoeudInstSi::traduitEnCPP(ostream & cout, unsigned int indentation) const {
+void NoeudInstSi::traduitEnCpp(ostream & cout, unsigned int indentation) const
+{
 	cout << setw(4 * indentation) << "" << "if (";
 	// Ecrit "if (" avec un décalage de 4*indentation espaces
-	m_condition->traduitEnCPP(cout, 0);
+  m_condition->traduitEnCpp();
 	// Traduit la condition en C++ sans décalage
 	cout << ") {" << endl;
 	// Ecrit ") {" et passe à la ligne
-	m_sequence->traduitEnCPP(cout, indentation + 1);
+  m_sequence->traduitEnCpp();
 	// Traduit en C++ la séquence avec indentation augmentée
 	cout << setw(4 * indentation) << "" << "}" << endl;
 	// Ecrit "}" avec l'indentation initiale et passe à la ligne
@@ -160,7 +161,8 @@ int NoeudInstTantQue::executer() {
 	return 0;
 }
 
-void NoeudInstTantQue::traduitEnCpp(ostream & cout, unsigned int indentation) {
+NoeudInstTantQue::traduitEnCpp(ostream & cout, unsigned int indentation)
+{
 	cout << setw(4 * indentation) << "" << "while (";
 	// Ecrit "while (" avec un decalage de 4*indentation espaces
 	m_condition->traduitEnCpp(cout, 0);
