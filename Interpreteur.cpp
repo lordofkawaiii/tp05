@@ -305,7 +305,7 @@ void Interpreteur::traduitEnCPP(ostream & cout,
 			}
 		}
 	}
-	getArbre()->traduitEnCPP(cout, indentation + 1); // lance l'opération traduitEnCPP sur la racine
+  getArbre()->traduitEnCpp(cout, indentation + 1); // lance l'opération traduitEnCPP sur la racine
 	cout << setw(4 * (indentation + 1)) << "" << "return 0;" << endl;
 	cout << setw(4 * indentation) << "}" << endl; // Fin d’un programme C++
 }
