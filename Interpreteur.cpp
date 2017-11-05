@@ -293,16 +293,7 @@ void Interpreteur::traduitEnCPP(ostream & cout,
 	TableSymboles tableArbre = getTable();
 	for (unsigned int i = 0; i <= tableArbre.getTaille(); ++i) {
 		if (tableArbre[i] == "<VARIABLE>") {
-			try {
-        SymboleValue elem = tableArbre[i];
-				cout << setw(4 * (indentation + 1)) << "int "
-						<< tableArbre[i].getChaine() << " = "
-            << elem.executer() << ";" << endl;
-			}
-			catch (IndefiniException & e) {
-				cout << setw(4 * (indentation + 1)) << "int "
-						<< tableArbre[i].getChaine() << ";" << endl;
-			}
+			tableArbre[i].traduitEnCpp(cout, indentation + 1);
 		}
 	}
 	getArbre()->traduitEnCPP(cout, indentation + 1); // lance l'opération traduitEnCPP sur la racine

@@ -20,6 +20,14 @@ int NoeudSeqInst::executer() {
 void NoeudSeqInst::ajoute(Noeud* instruction) {
   if (instruction!=nullptr) m_instructions.push_back(instruction);
 }
+
+void NoeudSeqInst::traduitEnCpp(ostream & cout, unsigned int indentation) {
+	for (unsigned int i = 0; i < m_instructions.size(); i++) {
+		cout << setw(4 * indentation);
+		m_instructions[i]->traduitEnCpp(cout, 0);
+		cout << endl;
+	}
+}
 ////////////////////////////////////////////////////////////////////////////////
 // NoeudLire
 ////////////////////////////////////////////////////////////////////////////////
@@ -34,9 +42,18 @@ int NoeudLire::executer() {
 	return 0; // La valeur renvoyée ne représente rien !
 }
 
-void NoeudLire::ajoute(Noeud* instruction) {
-	if (instruction != nullptr)
-		m_variable.push_back(instruction);
+void NoeudLire::ajoute(Noeud* variable) {
+	if (variable != nullptr)
+		m_variable.push_back(variable);
+}
+
+void NoeudLire::traduitEnCpp(ostream & cout, unsigned int indentation) {
+	cout << setw(4 * indentation) << "" << "cin ";
+	for (unsigned int i = 0; i < m_variable.size(); i++) {
+		cout << ">> ";
+		m_variable[i]->traduitEnCpp(cout, 0);
+	}
+	cout << ";" << endl;
 }
 ////////////////////////////////////////////////////////////////////////////////
 // NoeudEcrire
@@ -47,6 +64,20 @@ NoeudEcrire::NoeudEcrire() {
 
 int NoeudEcrire::executer() {
 	return 0; // La valeur renvoyée ne représente rien !
+}
+
+void NoeudLire::ajoute(Noeud* expression) {
+	if (expression != nullptr)
+		m_expression.push_back(expression);
+}
+
+void NoeudEcrire::traduitEnCpp(ostream & cout, unsigned int indentation) {
+	cout << setw(4 * indentation) << "" << "cout ";
+	for (unsigned int i = 0; i < m_expression.size(); ++i) {
+		cout << "<< ";
+		m_expression[i]->traduitEnCpp(cout, 0);
+	}
+	cout << " << endl;" << endl;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -132,7 +163,8 @@ void NoeudOperateurBinaire::traduitEnCpp(ostream & cout,
 // NoeudInstSi
 ////////////////////////////////////////////////////////////////////////////////
 
-NoeudInstSi::NoeudInstSi(Noeud* condition, Noeud* sequence)
+NoeudInstSi::NoeudInstSi(NoeudOperateurBinaire* condition,
+		NoeudSeqInst* sequence)
 : m_condition(condition), m_sequence(sequence) {
 }
 
@@ -158,7 +190,8 @@ void NoeudInstSi::traduitEnCPP(ostream & cout, unsigned int indentation) const {
 // NoeudInstTantQue
 ////////////////////////////////////////////////////////////////////////////////
 
-NoeudInstTantQue::NoeudInstTantQue(Noeud* condition, Noeud* sequence) :
+NoeudInstTantQue::NoeudInstTantQue(NoeudOperateurBinaire* condition,
+		NoeudSeqInst* sequence) :
 		m_condition(condition), m_sequence(sequence) {
 }
 
@@ -184,7 +217,8 @@ void NoeudInstTantQue::traduitEnCpp(ostream & cout, unsigned int indentation) {
 // NoeudInstRepeter
 ////////////////////////////////////////////////////////////////////////////////
 
-NoeudInstRepeter::NoeudInstRepeter(Noeud* limite, Noeud* sequence) :
+NoeudInstRepeter::NoeudInstRepeter(NoeudOperateurBinaire* limite,
+		NoeudSeqInst* sequence) :
 		m_limite(limite), m_sequence(sequence) {
 }
 
