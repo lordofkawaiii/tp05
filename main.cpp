@@ -12,8 +12,8 @@ int main(int argc, char* argv[]) {
   } else
     nomFich = argv[1];
   ifstream fichier(nomFich.c_str());
+	Interpreteur interpreteur(fichier);
   try {
-    Interpreteur interpreteur(fichier);
     interpreteur.analyse();
     // Si pas d'exception levée, l'analyse syntaxique a réussi
     cout << endl << "================ Syntaxe Correcte" << endl;
@@ -27,5 +27,6 @@ int main(int argc, char* argv[]) {
   } catch (InterpreteurException & e) {
     cout << e.what() << endl;
   }
+	interpreteur.traduitEnCPP(ofstream cout("traduction.cpp"), 0);
   return 0;
 }
