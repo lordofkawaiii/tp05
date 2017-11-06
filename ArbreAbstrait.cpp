@@ -1,31 +1,34 @@
-#include <stdlib.h>
 #include "ArbreAbstrait.h"
-#include "Symbole.h"
+
+#include <iomanip>
+
 #include "SymboleValue.h"
-#include "Exceptions.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // NoeudSeqInst
 ////////////////////////////////////////////////////////////////////////////////
 
-NoeudSeqInst::NoeudSeqInst() : m_instructions() {
+NoeudSeqInst::NoeudSeqInst() :
+		m_instructions() {
 }
 
 int NoeudSeqInst::executer() {
-  for (unsigned int i = 0; i < m_instructions.size(); i++)
-    m_instructions[i]->executer(); // on exécute chaque instruction de la séquence
-  return 0; // La valeur renvoyée ne représente rien !
+	for (unsigned int i = 0; i < m_instructions.size(); i++)
+		m_instructions[i]->executer(); // on exécute chaque instruction de la séquence
+	return 0; // La valeur renvoyée ne représente rien !
 }
 
 void NoeudSeqInst::ajoute(Noeud* instruction) {
-  if (instruction!=nullptr) m_instructions.push_back(instruction);
+	if (instruction != nullptr)
+		m_instructions.push_back(instruction);
 }
 
-void NoeudSeqInst::traduitEnCpp(ostream & cout, unsigned int indentation) {
+void NoeudSeqInst::traduitEnCpp(ostream & cout,
+		unsigned int indentation) const {
 	for (unsigned int i = 0; i < m_instructions.size(); i++) {
 		cout << setw(4 * indentation);
 		m_instructions[i]->traduitEnCpp(cout, 0);
-		cout << endl;
+		cout << ";" << endl;
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -47,7 +50,7 @@ void NoeudLire::ajoute(Noeud* variable) {
 		m_variable.push_back(variable);
 }
 
-void NoeudLire::traduitEnCpp(ostream & cout, unsigned int indentation) {
+void NoeudLire::traduitEnCpp(ostream & cout, unsigned int indentation) const {
 	cout << setw(4 * indentation) << "" << "cin ";
 	for (unsigned int i = 0; i < m_variable.size(); i++) {
 		cout << ">> ";
@@ -72,7 +75,7 @@ void NoeudEcrire::ajoute(Noeud* expression)
 		m_expression.push_back(expression);
 }
 
-void NoeudEcrire::traduitEnCpp(ostream & cout, unsigned int indentation) {
+void NoeudEcrire::traduitEnCpp(ostream & cout, unsigned int indentation) const {
 	cout << setw(4 * indentation) << "" << "cout ";
 	for (unsigned int i = 0; i < m_expression.size(); ++i) {
 		cout << "<< ";
@@ -84,6 +87,7 @@ void NoeudEcrire::traduitEnCpp(ostream & cout, unsigned int indentation) {
 ////////////////////////////////////////////////////////////////////////////////
 // NoeudPour
 ////////////////////////////////////////////////////////////////////////////////
+
 
 NoeudPour::NoeudPour(NoeudSeqInst* m_sequence, Noeud* m_expression,
                      NoeudAffectation* m_affectationI,
@@ -98,7 +102,7 @@ int NoeudPour::executer() {
 	return 0; // La valeur renvoyée ne représente rien !
 }
 
-void NoeudPour::traduitEnCpp(ostream & cout, unsigned int indentation) {
+void NoeudPour::traduitEnCpp(ostream & cout, unsigned int indentation) const {
 	cout << setw(4 * indentation) << "" << "for (";
 	m_affectationI->traduitEnCpp(cout, 0);
 	cout << " ; ";
@@ -107,75 +111,103 @@ void NoeudPour::traduitEnCpp(ostream & cout, unsigned int indentation) {
 	m_affectationIncrementaton->traduitEnCpp(cout, 0);
 	cout << ") {" << endl;
 	m_sequence->traduitEnCpp(cout, indentation + 1);
+	cout << setw(4 * indentation) << " " << " }" << endl;
 }
 ////////////////////////////////////////////////////////////////////////////////
 // NoeudAffectation
 ////////////////////////////////////////////////////////////////////////////////
 
-NoeudAffectation::NoeudAffectation(Noeud* variable, Noeud* expression)
-: m_variable(variable), m_expression(expression) {
+NoeudAffectation::NoeudAffectation(Noeud* variable, Noeud* expression) :
+		m_variable(variable), m_expression(expression) {
 }
 
 int NoeudAffectation::executer() {
-  int valeur = m_expression->executer(); // On exécute (évalue) l'expression
-  ((SymboleValue*) m_variable)->setValeur(valeur); // On affecte la variable
-  return 0; // La valeur renvoyée ne représente rien !
+	int valeur = m_expression->executer(); // On exécute (évalue) l'expression
+	((SymboleValue*) m_variable)->setValeur(valeur); // On affecte la variable
+	return 0; // La valeur renvoyée ne représente rien !
 }
 
-void NoeudAffectation::traduitEnCpp(ostream & cout, unsigned int indentation) {
-	cout << setw(4 * indentation) << m_variable->executer() << " = "
-			<< m_expression->executer() << endl;
+void NoeudAffectation::traduitEnCpp(ostream & cout,
+		unsigned int indentation) const {
+	cout << setw(4 * indentation);
+	m_variable->traduitEnCpp(cout, 0);
+	cout << " = ";
+	m_expression->traduitEnCpp(cout, 0);
+	cout << ";" << endl;
 }
 ////////////////////////////////////////////////////////////////////////////////
 // NoeudOperateurBinaire
 ////////////////////////////////////////////////////////////////////////////////
 
-NoeudOperateurBinaire::NoeudOperateurBinaire(Symbole operateur, Noeud* operandeGauche, Noeud* operandeDroit)
-: m_operateur(operateur), m_operandeGauche(operandeGauche), m_operandeDroit(operandeDroit) {
+NoeudOperateurBinaire::NoeudOperateurBinaire(Symbole operateur,
+		Noeud* operandeGauche, Noeud* operandeDroit) :
+		m_operateur(operateur), m_operandeGauche(operandeGauche), m_operandeDroit(
+				operandeDroit) {
 }
 
 int NoeudOperateurBinaire::executer() {
-  int og, od, valeur;
-  if (m_operandeGauche != nullptr) og = m_operandeGauche->executer(); // On évalue l'opérande gauche
-  if (m_operandeDroit != nullptr) od = m_operandeDroit->executer(); // On évalue l'opérande droit
-  // Et on combine les deux opérandes en fonctions de l'opérateur
-  if (this->m_operateur == "+") valeur = (og + od);
-  else if (this->m_operateur == "-") valeur = (og - od);
-  else if (this->m_operateur == "*") valeur = (og * od);
-  else if (this->m_operateur == "==") valeur = (og == od);
-  else if (this->m_operateur == "!=") valeur = (og != od);
-  else if (this->m_operateur == "<") valeur = (og < od);
-  else if (this->m_operateur == ">") valeur = (og > od);
-  else if (this->m_operateur == "<=") valeur = (og <= od);
-  else if (this->m_operateur == ">=") valeur = (og >= od);
-  else if (this->m_operateur == "et") valeur = (og && od);
-  else if (this->m_operateur == "ou") valeur = (og || od);
-  else if (this->m_operateur == "non") valeur = (!og);
-  else if (this->m_operateur == "/") {
-    if (od == 0) throw DivParZeroException();
-    valeur = og / od;
-  }
-  return valeur; // On retourne la valeur calculée
+	int og, od, valeur;
+	if (m_operandeGauche != nullptr)
+		og = m_operandeGauche->executer(); // On évalue l'opérande gauche
+	if (m_operandeDroit != nullptr)
+		od = m_operandeDroit->executer(); // On évalue l'opérande droit
+	// Et on combine les deux opérandes en fonctions de l'opérateur
+	if (this->m_operateur == "+")
+		valeur = (og + od);
+	else if (this->m_operateur == "-")
+		valeur = (og - od);
+	else if (this->m_operateur == "*")
+		valeur = (og * od);
+	else if (this->m_operateur == "==")
+		valeur = (og == od);
+	else if (this->m_operateur == "!=")
+		valeur = (og != od);
+	else if (this->m_operateur == "<")
+		valeur = (og < od);
+	else if (this->m_operateur == ">")
+		valeur = (og > od);
+	else if (this->m_operateur == "<=")
+		valeur = (og <= od);
+	else if (this->m_operateur == ">=")
+		valeur = (og >= od);
+	else if (this->m_operateur == "et")
+		valeur = (og && od);
+	else if (this->m_operateur == "ou")
+		valeur = (og || od);
+	else if (this->m_operateur == "non")
+		valeur = (!og);
+	else if (this->m_operateur == "/") {
+		if (od == 0)
+			throw DivParZeroException();
+		valeur = og / od;
+	}
+	return valeur; // On retourne la valeur calculée
 }
 
 void NoeudOperateurBinaire::traduitEnCpp(ostream & cout,
-		unsigned int indentation) {
-	cout << setw(4 * indentation) << "" << m_operandeGauche->executer() << " "
-			<< m_operateur << " " << m_operandeDroit->executer() << endl;
+		unsigned int indentation) const {
+	cout << setw(4 * indentation) << "";
+	m_operandeGauche->traduitEnCpp(cout, 0);
+	cout << " " << m_operateur << " ";
+	m_operandeDroit->traduitEnCpp(cout, 0);
+	cout << ";" << endl;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // NoeudInstSi
 ////////////////////////////////////////////////////////////////////////////////
 
-NoeudInstSi::NoeudInstSi(NoeudOperateurBinaire* condition, NoeudSeqInst* sequence)
-: m_condition(condition), m_sequence(sequence) {
+NoeudInstSi::NoeudInstSi(NoeudOperateurBinaire* condition,
+		NoeudSeqInst* sequence) :
+		m_condition(condition), m_sequence(sequence) {
 }
 
 int NoeudInstSi::executer() {
-  if (m_condition->executer()) m_sequence->executer();
-  return 0; // La valeur renvoyée ne représente rien !
+	if (m_condition->executer())
+		m_sequence->executer();
+	return 0; // La valeur renvoyée ne représente rien !
 }
+
 
 void NoeudInstSi::traduitEnCpp(ostream & cout, unsigned int indentation) const
 {
@@ -205,8 +237,8 @@ int NoeudInstTantQue::executer() {
 	return 0;
 }
 
-void NoeudInstTantQue::traduitEnCPP(ostream & cout, unsigned int indentation)
-{
+void NoeudInstTantQue::traduitEnCpp(ostream & cout,
+		unsigned int indentation) const {
 	cout << setw(4 * indentation) << "" << "while (";
 	// Ecrit "while (" avec un decalage de 4*indentation espaces
 	m_condition->traduitEnCpp(cout, 0);
@@ -231,7 +263,8 @@ int NoeudInstRepeter::executer() {
 	return 0;
 }
 
-void NoeudInstRepeter::traduitEnCpp(ostream & cout, unsigned int indentation) {
+void NoeudInstRepeter::traduitEnCpp(ostream & cout,
+		unsigned int indentation) const {
 	cout << setw(4 * indentation) << "" << "do {" << endl;
 	// Ecrit "do {" avec un decalage de 4*indentation espaces
 	m_sequence->traduitEnCpp(cout, 0);

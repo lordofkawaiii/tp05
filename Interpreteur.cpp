@@ -1,6 +1,13 @@
 #include "Interpreteur.h"
-#include <stdlib.h>
+
+#include <cstdio>
+#include <iomanip>
 #include <iostream>
+#include <string>
+#include <typeinfo>
+
+#include "SymboleValue.h"
+
 using namespace std;
 
 Interpreteur::Interpreteur(ifstream & fichier) :
@@ -296,7 +303,7 @@ void Interpreteur::traduitEnCPP(ostream & cout,
 			tableArbre[i].traduitEnCpp(cout, indentation + 1);
 		}
 	}
-  getArbre()->traduitEnCpp(cout, indentation + 1); // lance l'opération traduitEnCPP sur la racine
+	getArbre()->traduitEnCpp(cout, indentation + 1); // lance l'opération traduitEnCPP sur la racine
 	cout << setw(4 * (indentation + 1)) << "" << "return 0;" << endl;
 	cout << setw(4 * indentation) << "}" << endl; // Fin d’un programme C++
 }
