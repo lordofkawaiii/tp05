@@ -89,9 +89,8 @@ void NoeudEcrire::traduitEnCpp(ostream & cout, unsigned int indentation) const {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-NoeudPour::NoeudPour(NoeudSeqInst* m_sequence, Noeud* m_expression,
-                     NoeudAffectation* m_affectationI,
-                     NoeudAffectation* m_affectationIncrementaton) :
+NoeudPour::NoeudPour(Noeud* m_sequence, Noeud* m_expression, Noeud* m_affectationI,
+                     Noeud* m_affectationIncrementaton) :
     m_sequence(m_sequence), m_expression(m_expression), m_affectationI(m_affectationI),
     m_affectationIncrementaton(m_affectationIncrementaton)
 {
@@ -197,37 +196,87 @@ void NoeudOperateurBinaire::traduitEnCpp(ostream & cout,
 // NoeudInstSi
 ////////////////////////////////////////////////////////////////////////////////
 
-NoeudInstSi::NoeudInstSi(NoeudOperateurBinaire* condition,
-		NoeudSeqInst* sequence) :
-		m_condition(condition), m_sequence(sequence) {
+NoeudInstSi::NoeudInstSi(Noeud* condition, Noeud* sequence)
+{
+  ajoute(condition);
+  ajoute(sequence);
 }
 
 int NoeudInstSi::executer() {
-	if (m_condition->executer())
-		m_sequence->executer();
-	return 0; // La valeur renvoyée ne représente rien !
+  size_t var;
+  for (var = 0; var < m_condition.size() && !(m_condition[var]->executer()); ++var)
+  {
+  }
+  if (var < m_condition.size() && m_condition[var]->executer())
+  {
+    m_sequence[var]->executer();
+  }
+  else if (m_sequence.size() > var) //si il y a un sinon
+  {
+    m_sequence[var]->executer();
+  }
+  return 0;
+}
+
+
+void NoeudInstSi::ajoute(Noeud* instruction)
+{
+  if (typeid(*instruction) == typeid(NoeudSeqInst))
+  {
+    m_sequence.push_back(instruction);
+  }
+  else
+  {
+    m_condition.push_back(instruction);
+  }
 }
 
 
 void NoeudInstSi::traduitEnCpp(ostream & cout, unsigned int indentation) const
 {
+  size_t var = 0;
 	cout << setw(4 * indentation) << "" << "if (";
 	// Ecrit "if (" avec un décalage de 4*indentation espaces
-  m_condition->traduitEnCpp(cout, 0);
+  m_condition[var]->traduitEnCpp(cout, 0);
 	// Traduit la condition en C++ sans décalage
 	cout << ") {" << endl;
 	// Ecrit ") {" et passe à la ligne
-  m_sequence->traduitEnCpp(cout, indentation + 1);
+  m_sequence[var]->traduitEnCpp(cout, indentation + 1);
 	// Traduit en C++ la séquence avec indentation augmentée
 	cout << setw(4 * indentation) << "" << "}" << endl;
 	// Ecrit "}" avec l'indentation initiale et passe à la ligne
+  for (var = 1; var < m_condition.size(); ++var)
+  {
+    cout << setw(4 * indentation) << "" << "else if (";
+    // Ecrit "if (" avec un décalage de 4*indentation espaces
+    m_condition[var]->traduitEnCpp(cout, 0);
+    // Traduit la condition en C++ sans décalage
+    cout << ") {" << endl;
+    // Ecrit ") {" et passe à la ligne
+    m_sequence[var]->traduitEnCpp(cout, indentation + 1);
+    // Traduit en C++ la séquence avec indentation augmentée
+    cout << setw(4 * indentation) << "" << "}" << endl;
+    // Ecrit "}" avec l'indentation initiale et passe à la ligne
+  }
+  if (m_sequence.size() > var)
+  {
+    cout << setw(4 * indentation) << "" << "else {";
+    {
+      // Ecrit ") {" et passe à la ligne
+      m_sequence[var]->traduitEnCpp(cout, indentation + 1);
+      // Traduit en C++ la séquence avec indentation augmentée
+      cout << setw(4 * indentation) << "" << "}" << endl;
+      // Ecrit "}" avec l'indentation initiale et passe à la ligne
+
+    }
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // NoeudInstTantQue
 ////////////////////////////////////////////////////////////////////////////////
 
-NoeudInstTantQue::NoeudInstTantQue(NoeudOperateurBinaire* condition, NoeudSeqInst* sequence) :
+NoeudInstTantQue::NoeudInstTantQue(Noeud* condition, Noeud* sequence) :
 		m_condition(condition), m_sequence(sequence) {
 }
 
@@ -254,7 +303,7 @@ void NoeudInstTantQue::traduitEnCpp(ostream & cout,
 // NoeudInstRepeter
 ////////////////////////////////////////////////////////////////////////////////
 
-NoeudInstRepeter::NoeudInstRepeter(NoeudOperateurBinaire* limite, NoeudSeqInst* sequence) :
+NoeudInstRepeter::NoeudInstRepeter(Noeud* limite, Noeud* sequence) :
 		m_limite(limite), m_sequence(sequence) {
 }
 

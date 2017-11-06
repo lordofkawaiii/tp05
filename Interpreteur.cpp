@@ -18,8 +18,8 @@ void Interpreteur::analyse() {
   m_arbre = programme(); // on lance l'analyse de la première règle
 }
 
-void Interpreteur::tester(string const & symboleAttendu) const
-		throw (SyntaxeException) {
+void Interpreteur::tester(string const & symboleAttendu) const noexcept(false)
+{
   // Teste si le symbole courant est égal au symboleAttendu... Si non, lève une exception
   static char messageWhat[256];
   if (m_lecteur.getSymbole() != symboleAttendu) {
@@ -31,14 +31,15 @@ void Interpreteur::tester(string const & symboleAttendu) const
   }
 }
 
-void Interpreteur::testerEtAvancer(string const & symboleAttendu)
-		throw (SyntaxeException) {
+void Interpreteur::testerEtAvancer(string const & symboleAttendu) noexcept(false)
+{
   // Teste si le symbole courant est égal au symboleAttendu... Si oui, avance, Sinon, lève une exception
   tester(symboleAttendu);
   m_lecteur.avancer();
 }
 
-void Interpreteur::erreur(string const & message) const throw (SyntaxeException) {
+void Interpreteur::erreur(string const & message) const noexcept(false)
+{
   // Lève une exception contenant le message et le symbole courant trouvé
   // Utilisé lorsqu'il y a plusieurs symboles attendus possibles...
   static char messageWhat[256];
@@ -180,15 +181,15 @@ Noeud* Interpreteur::instSi() {
 	// <instSi> ::= si ( <expression> ) <seqInst> finsi
 	testerEtAvancer("si");
 	testerEtAvancer("(");
-	NoeudPour* res = new NoeudPour;
 	Noeud* condition = expression(); // On mémorise la condition
-	res->ajoute(condition);
 	testerEtAvancer(")");
 	Noeud* sequence = seqInst();     // On mémorise la séquence d'instruction
-	res->ajoute(sequence);
+  Noeud* res = new NoeudInstSi(condition, sequence);
+  res->ajoute(condition);
+  res->ajoute(sequence);
 	while (m_lecteur.getSymbole() == "sinonsi") {
 		testerEtAvancer("sinonsi");
-		testerEtAvancer(")");
+    testerEtAvancer("(");
 		Noeud* condition = expression(); // On mémorise la condition
 		res->ajoute(condition);
 		testerEtAvancer(")");
@@ -207,54 +208,48 @@ Noeud* Interpreteur::instSi() {
 Noeud* Interpreteur::instTantQue() {
 	testerEtAvancer("tantque");
 	testerEtAvancer("(");
-	NoeudPour* res = new NoeudPour;
 	Noeud* expr = expression();
-	res->ajoute(expr);
 	testerEtAvancer(")");
 	Noeud* seq = seqInst();
-	res->ajoute(seq);
 	testerEtAvancer("fintantque");
+  Noeud* res = new NoeudInstTantQue(expr, seq);
 	return res;
 }
 Noeud* Interpreteur::instRepeter() {
 	testerEtAvancer("repeter");
-	NoeudPour* res = new NoeudPour;
 	Noeud* seq = seqInst();
-	res->ajoute(seq);
 	testerEtAvancer("jusqua");
 	testerEtAvancer("(");
 	Noeud* expr = expression();
-	res->ajoute(expr);
 	testerEtAvancer(")");
+  Noeud* res = new NoeudInstRepeter(expr, seq);
 	return res;
 }
 Noeud* Interpreteur::instPour() {
 	testerEtAvancer("pour");
 	testerEtAvancer("(");
-	NoeudPour* res = new NoeudPour;
+  Noeud* aff1 = nullptr;
+  Noeud* aff2 = nullptr;
 	if (m_lecteur.getSymbole() != ";") {
-		Noeud* aff1 = affectation();
-		res->ajoute(aff1);
+    aff1 = affectation();
 	}
 	testerEtAvancer(";");
 	Noeud* exp = expression();
-	res->ajoute(exp);
 	testerEtAvancer(";");
 	if (m_lecteur.getSymbole() != ")") {
-		Noeud* aff2 = affectation();
-		res->ajoute(aff2);
+    aff2 = affectation();
 	}
 	testerEtAvancer(")");
 	Noeud* seq = seqInst();
-	res->ajoute(seq);
 	testerEtAvancer("finpour");
+  Noeud* res = new NoeudPour(seq, exp, aff1, aff2);
 	return res;
 }
 Noeud* Interpreteur::instEcrire() {
 	testerEtAvancer("ecrire");
 	testerEtAvancer("(");
 	Noeud* p;
-	NoeudEcrire *vchaine = new NoeudEcrire;
+  NoeudEcrire *vchaine = new NoeudEcrire();
 	// on regarde si l’objet pointé par p est de type SymboleValue et si c’est une chaîne
 	if ((typeid(*p) == typeid(SymboleValue)
 			&& *((SymboleValue*) p) == "<CHAINE>")) {
@@ -281,7 +276,7 @@ Noeud* Interpreteur::instEcrire() {
 Noeud* Interpreteur::instLire() {
 	testerEtAvancer("lire");
 	testerEtAvancer("(");
-	NoeudLire* vvar = new NoeudLire;
+  NoeudLire* vvar = new NoeudLire();
 	Noeud* var = m_table.chercheAjoute(m_lecteur.getSymbole());
 	vvar->ajoute(var);
 	while (m_lecteur.getSymbole() != ")") {

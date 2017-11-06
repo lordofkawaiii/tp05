@@ -1,11 +1,11 @@
 #ifndef INTERPRETEUR_H
 #define INTERPRETEUR_H
 
-#include "Symbole.h"
+#include <iostream>
+#include <string>
+
 #include "Lecteur.h"
-#include "Exceptions.h"
 #include "TableSymboles.h"
-#include "ArbreAbstrait.h"
 
 class Interpreteur {
 public:
@@ -44,9 +44,9 @@ private:
 	Noeud* instLire();
 
     // outils pour simplifier l'analyse syntaxique
-	void tester(string const & symboleAttendu) const throw (SyntaxeException); // Si symbole courant != symboleAttendu, on lève une exception
-	void testerEtAvancer(string const & symboleAttendu) throw (SyntaxeException); // Si symbole courant != symboleAttendu, on lève une exception, sinon on avance
-	void erreur(string const & mess) const throw (SyntaxeException);
+  void tester(string const & symboleAttendu) const noexcept(false); // Si symbole courant != symboleAttendu, on lève une exception
+  void testerEtAvancer(string const & symboleAttendu) noexcept(false); // Si symbole courant != symboleAttendu, on lève une exception, sinon on avance
+  void erreur(string const & mess) const noexcept(false);
 	// Lève une exception "contenant" le message mess
 };
 
