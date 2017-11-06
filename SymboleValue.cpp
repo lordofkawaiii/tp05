@@ -1,6 +1,10 @@
 #include "SymboleValue.h"
-#include "Exceptions.h"
+
 #include <stdlib.h>
+#include <iomanip>
+#include <string>
+
+#include "Exceptions.h"
 
 SymboleValue::SymboleValue(Symbole const & s) :
 Symbole(s.getChaine()) {
@@ -25,29 +29,13 @@ ostream & operator<<(ostream & cout, SymboleValue const & symbole) {
   return cout;
 }
 
-void SymboleValue::traduitEnCpp(ostream & cout, unsigned int indentation) {
+void SymboleValue::traduitEnCpp(ostream & cout,
+		unsigned int indentation) const {
 	cout << setw(4 * indentation) << "";
-	if (m_categorie == "<VARIABLE>") {
-		// Si c'est une variable on ecrit sous la forme int nom_variable = valeur_variable;
-		try {
-			//On teste si la variable à une valeur
-			cout << "int " << m_chaine << " = " << this->executer() << ";"
-					<< endl;
-		} catch (IndefiniException & e) {
-			// Si elle n'a pas de valeur alors on l'ecrit sous la forme int nom_variable;
-			cout << "int " << m_chaine << ";"
-					<< endl;
-		}
-	} else if (m_categorie == "<ENTIER>") {
-		cout << m_chaine << endl;
-	} else if (m_categorie == "<CHAINE>") {
-		cout << m_chaine << endl;
-	} else if (m_categorie == "<MOTCLE>") {
-		//Si le symbole est un mot clé alors on lance le traduitEnCpp du noeud correspondant au mot cle
-		// Je vois juste pas comment faire
-	} else if (m_categorie == "<FINDEFICHIER>") {
-		//jsp quoi ecrire
+	if (m_categorie == m_categorie::VARIABLE) {
+		// Si c'est une variable on ecrit sous la forme int nom_variable;
+		cout << "int " << m_chaine << ";" << endl;
 	} else {
-		//idem
+		cout << getChaine() << endl;
 	}
 }
