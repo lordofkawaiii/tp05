@@ -61,6 +61,7 @@ public:
 	NoeudEcrire();   // Construit une séquence d'instruction vide
 	~NoeudEcrire() {
 	} // A cause du destructeur virtuel de la classe Noeud
+
 	int executer() override;    // Exécute chaque instruction de la séquence
 	void ajoute(Noeud* expression) override; // Ajoute une expression dans la chaine a ecrire
 	void traduitEnCpp(ostream & cout, unsigned int indentation) const override;
@@ -82,24 +83,27 @@ private:
 	Noeud* m_variable;
 	Noeud* m_expression;
 };
-
 ////////////////////////////////////////////////////////////////////////////////
 
-class NoeudPour: public Noeud {
+class NoeudPour : public Noeud
+{
 // Classe pour représenter un noeud "pour"
 //  composé d'une sequence d'instruction 2 affectation et 1 expression
 public:
-	NoeudPour();   // Construit une séquence d'instruction vide
+	NoeudPour(NoeudSeqInst* m_sequence, Noeud* m_expression, NoeudAffectation* m_affectationI =
+                nullptr,
+            NoeudAffectation* m_affectationIncrementaton = nullptr); // Construit une séquence d'instruction vide
 	~NoeudPour() {
 	} // A cause du destructeur virtuel de la classe Noeud
 	int executer() override;    // Exécute chaque instruction de la séquence
 	void traduitEnCpp(ostream & cout, unsigned int indentation) const override;
 private:
-	NoeudSeqInst* m_sequence;
-	Noeud* m_expression;
-	NoeudAffectation* m_affectationI;
-	NoeudAffectation* m_affectationIncrementaton;
+  NoeudSeqInst* m_sequence;
+  Noeud* m_expression;
+  NoeudAffectation* m_affectationI;
+  NoeudAffectation* m_affectationIncrementaton;
 };
+
 
 ////////////////////////////////////////////////////////////////////////////////
 class NoeudOperateurBinaire : public Noeud {
@@ -122,7 +126,7 @@ class NoeudInstSi : public Noeud {
 // Classe pour représenter un noeud "instruction si"
 //  et ses 2 fils : la condition du si et la séquence d'instruction associée
   public:
-	NoeudInstSi(NoeudOperateurBinaire* condition, NoeudSeqInst* sequence);
+  NoeudInstSi(NoeudOperateurBinaire* condition, NoeudSeqInst* sequence);
      // Construit une "instruction si" avec sa condition et sa séquence d'instruction
    ~NoeudInstSi() {} // A cause du destructeur virtuel de la classe Noeud
 	int executer() override; // Exécute l'instruction si : si condition vraie on exécute la séquence
@@ -137,7 +141,7 @@ class NoeudInstTantQue: public Noeud {
 // Classe pour représenter un noeud "instruction tant que"
 //  et ses 2 fils : la condition du tant que et la séquence d'instruction associée
 public:
-	NoeudInstTantQue(NoeudOperateurBinaire* condition, NoeudSeqInst* sequence);
+  NoeudInstTantQue(NoeudOperateurBinaire* condition, NoeudSeqInst* sequence);
 	// Construit une "instruction tant que" avec sa condition et sa séquence d'instruction
 	~NoeudInstTantQue() {
 	} // A cause du destructeur virtuel de la classe Noeud
@@ -153,7 +157,7 @@ class NoeudInstRepeter: public Noeud {
 // Classe pour représenter un noeud "instruction repeter"
 //  et ses 2 fils : la sequence d'instruction à repeter et la limite de repetition
 public:
-	NoeudInstRepeter(NoeudOperateurBinaire* limite, NoeudSeqInst* sequence);
+  NoeudInstRepeter(NoeudOperateurBinaire* limite, NoeudSeqInst* sequence);
 	// Construit une "instruction repeter" avec sa limite et sa séquence d'instruction
 	~NoeudInstRepeter() {
 	} // A cause du destructeur virtuel de la classe Noeud
