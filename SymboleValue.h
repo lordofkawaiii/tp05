@@ -13,10 +13,10 @@ class SymboleValue : public Symbole,  // Un symbole valué est un symbole qui a 
 public:
 	SymboleValue(Symbole const & s); // Construit un symbole valué à partir d'un symbole existant s
 	  ~SymboleValue( ) {}
-	  int  executer();         // exécute le SymboleValue (revoie sa valeur !)
+  int executer();         // exécute le SymboleValue (revoie sa valeur !)
 	  inline void setValeur(int valeur)    { this->m_valeur=valeur; m_defini=true;  } // accesseur
 	  inline bool estDefini()              { return m_defini;                       } // accesseur
-	void traduitEnCpp(ostream & cout, unsigned int indentation) const;
+  void traduitEnCpp(ostream & cout, unsigned int indentation) const;
 	friend ostream & operator <<(ostream & cout, SymboleValue const & symbole); // affiche un symbole value sur cout
 	bool m_defini;	// indique si la valeur du symbole est définie
 	int m_valeur;	// valeur du symbole si elle est définie, zéro sinon

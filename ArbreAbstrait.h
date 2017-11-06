@@ -74,6 +74,7 @@ class NoeudAffectation: public Noeud {
 //  composé de 2 fils : la variable et l'expression qu'on lui affecte
 public:
 	NoeudAffectation(Noeud* variable, Noeud* expression); // construit une affectation
+  NoeudAffectation(); // construit une affectation
 	~NoeudAffectation() {
 	} // A cause du destructeur virtuel de la classe Noeud
 	int executer(); // Exécute (évalue) l'expression et affecte sa valeur à la variable
@@ -92,6 +93,7 @@ public:
   NoeudPour(NoeudSeqInst* m_sequence, Noeud* m_expression, NoeudAffectation* m_affectationI =
                 nullptr,
             NoeudAffectation* m_affectationIncrementaton = nullptr); // Construit une séquence d'instruction vide
+  NoeudPour();
   ~NoeudPour()
   {
   } // A cause du destructeur virtuel de la classe Noeud
@@ -128,6 +130,7 @@ class NoeudInstSi : public Noeud {
 //  et ses 2 fils : la condition du si et la séquence d'instruction associée
   public:
   NoeudInstSi(NoeudOperateurBinaire* condition, NoeudSeqInst* sequence);
+  NoeudInstSi();
      // Construit une "instruction si" avec sa condition et sa séquence d'instruction
    ~NoeudInstSi() {} // A cause du destructeur virtuel de la classe Noeud
     int executer();  // Exécute l'instruction si : si condition vraie on exécute la séquence
@@ -143,6 +146,7 @@ class NoeudInstTantQue: public Noeud {
 //  et ses 2 fils : la condition du tant que et la séquence d'instruction associée
 public:
   NoeudInstTantQue(NoeudOperateurBinaire* condition, NoeudSeqInst* sequence);
+  NoeudInstTantQue();
 	// Construit une "instruction tant que" avec sa condition et sa séquence d'instruction
   ~NoeudInstTantQue()
   {
@@ -160,6 +164,7 @@ class NoeudInstRepeter: public Noeud {
 //  et ses 2 fils : la sequence d'instruction à repeter et la limite de repetition
 public:
   NoeudInstRepeter(NoeudOperateurBinaire* limite, NoeudSeqInst* sequence);
+  NoeudInstRepeter();
 	// Construit une "instruction repeter" avec sa limite et sa séquence d'instruction
 	~NoeudInstRepeter() {
 	} // A cause du destructeur virtuel de la classe Noeud

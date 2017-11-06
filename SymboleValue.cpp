@@ -25,14 +25,16 @@ ostream & operator<<(ostream & cout, SymboleValue const & symbole) {
   return cout;
 }
 
-void SymboleValue::traduitEnCpp(ostream & cout, unsigned int indentation) {
+void SymboleValue::traduitEnCpp(ostream & cout, unsigned int indentation) const
+{
 	cout << setw(4 * indentation) << "";
 	if (m_categorie == "<VARIABLE>") {
 		// Si c'est une variable on ecrit sous la forme int nom_variable = valeur_variable;
 		try {
 			//On teste si la variable à une valeur
-			cout << "int " << m_chaine << " = " << this->executer() << ";"
-					<< endl;
+      int res = this->m_valeur;
+      cout << "int " << m_chaine << " = " << res << ";"
+					<< "\n";
 		} catch (IndefiniException & e) {
 			// Si elle n'a pas de valeur alors on l'ecrit sous la forme int nom_variable;
 			cout << "int " << m_chaine << ";"

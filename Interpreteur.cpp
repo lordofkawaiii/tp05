@@ -173,7 +173,7 @@ Noeud* Interpreteur::instSi() {
 	// <instSi> ::= si ( <expression> ) <seqInst> finsi
 	testerEtAvancer("si");
 	testerEtAvancer("(");
-	NoeudPour* res = new NoeudPour;
+  NoeudInstSi* res = new NoeudInstSi;
 	Noeud* condition = expression(); // On mémorise la condition
 	res->ajoute(condition);
 	testerEtAvancer(")");
@@ -200,7 +200,7 @@ Noeud* Interpreteur::instSi() {
 Noeud* Interpreteur::instTantQue() {
 	testerEtAvancer("tantque");
 	testerEtAvancer("(");
-	NoeudPour* res = new NoeudPour;
+  NoeudInstTantQue* res = new NoeudInstTantQue;
 	Noeud* expr = expression();
 	res->ajoute(expr);
 	testerEtAvancer(")");
@@ -211,7 +211,7 @@ Noeud* Interpreteur::instTantQue() {
 }
 Noeud* Interpreteur::instRepeter() {
 	testerEtAvancer("repeter");
-	NoeudPour* res = new NoeudPour;
+  NoeudInstRepeter* res = new NoeudInstRepeter;
 	Noeud* seq = seqInst();
 	res->ajoute(seq);
 	testerEtAvancer("jusqua");

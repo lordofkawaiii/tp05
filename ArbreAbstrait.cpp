@@ -1,8 +1,6 @@
-#include <stdlib.h>
 #include "ArbreAbstrait.h"
-#include "Symbole.h"
+
 #include "SymboleValue.h"
-#include "Exceptions.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // NoeudSeqInst
