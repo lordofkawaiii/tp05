@@ -293,7 +293,7 @@ void Interpreteur::traduitEnCPP(ostream & cout,
 // ... variables dont on retrouvera le nom en parcourant la table des symboles !
 // Par exemple, si le programme contient i,j,k, il faudra écrire : int i; int j; int k; ...
 	TableSymboles tableArbre = getTable();
-	for (unsigned int i = 0; i <= tableArbre.getTaille(); ++i) {
+	for (unsigned int i = 0; i < tableArbre.getTaille(); ++i) {
 		if (tableArbre[i] == "<VARIABLE>") {
 			tableArbre[i].traduitEnCpp(cout, indentation + 1);
 		}
