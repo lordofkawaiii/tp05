@@ -5,7 +5,7 @@
 procedure principale() 
   test1 = 0 ; 
   tantque (test1 < 3)
-    test1 = test + 1 ; 
+    test1 = test1 + 1 ; 
   fintantque ; 
   test2 = 0 ; 
   tantque (test2 < 0)

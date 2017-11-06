@@ -281,8 +281,10 @@ NoeudInstTantQue::NoeudInstTantQue(Noeud* condition, Noeud* sequence) :
 }
 
 int NoeudInstTantQue::executer() {
-	if (m_condition->executer())
-		m_sequence->executer();
+  while ((m_condition->executer()))
+  {
+    m_sequence->executer();
+  }
 	return 0;
 }
 
